@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_UID: "1000"
+        APP_GID: "1000"
+    image: meine-app:latest
+    container_name: meine-app
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Vienna
+    # env_file:
+    #   - .env
+    # ports:
+    #   - "8080:8080"
+    volumes:
+      - ./app:/app
+      - app-data:/data
+    # Healthcheck aus dem Dockerfile deaktivieren, solange noch kein
+    # HTTP-Endpoint existiert:
+    healthcheck:
+      disable: true
+    stdin_open: true
+    tty: true
+
+volumes:
+  app-data:
