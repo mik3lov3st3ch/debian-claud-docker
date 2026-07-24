@@ -6,7 +6,7 @@ services:
       args:
         APP_UID: "1000"
         APP_GID: "1000"
-    image: debian:latest
+    image: meine-app:latest
     container_name: debian
     restart: unless-stopped
     environment:
