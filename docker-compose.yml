@@ -6,8 +6,8 @@ services:
       args:
         APP_UID: "1000"
         APP_GID: "1000"
-    image: meine-app:latest
-    container_name: meine-app
+    image: debian:latest
+    container_name: debian
     restart: unless-stopped
     environment:
       TZ: Europe/Vienna
