@@ -9,7 +9,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
         ca-certificates \
         tzdata \
+        gnupg \
+        git \
+        ripgrep \
+        procps \
+        less \
+        jq \
+        unzip \
+        zip \
     && rm -rf /var/lib/apt/lists/*
+
+# Node.js 22 LTS (Voraussetzung für Claude Code) über NodeSource installieren
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Claude Code CLI global installieren
+RUN npm install -g @anthropic-ai/claude-code \
+    && npm cache clean --force
 
 # Non-Root-User anlegen (UID/GID zur Laufzeit überschreibbar)
 ARG APP_UID=1000
@@ -23,6 +40,13 @@ WORKDIR /app
 # COPY --chown=app:app app/ /app/
 
 USER app
+
+# Claude Code legt Konfiguration/Login unter ~/.claude ab.
+# Beim Starten des Containers dieses Verzeichnis als Volume mounten, damit der
+# Login erhalten bleibt, z. B.: -v claude-config:/home/app/.claude
+# Authentifizierung wahlweise per "claude login" im Container oder über
+# eine zur Laufzeit gesetzte Umgebungsvariable ANTHROPIC_API_KEY.
+VOLUME ["/home/app/.claude"]
 
 # Einfacher Healthcheck – bei einer echten App auf deren Endpoint umstellen
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
